@@ -2,11 +2,11 @@
 # 查找脚本所在路径，并进入
 #DIR="$( cd "$( dirname "$0"  )" && pwd  )"
 DIR=$PWD
-cd $DIR
+cd $DIR/object_detection
 echo current dir is $PWD
 
 # 设置目录，避免module找不到的问题
-export PYTHONPATH=$PYTHONPATH:$DIR:$DIR/slim:$DIR/object_detection
+export PYTHONPATH=$PYTHONPATH:$DIR:$DIR/../slim:$DIR
 
 # 定义各目录
 output_dir=/output  # 训练目录
