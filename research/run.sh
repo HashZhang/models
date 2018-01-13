@@ -2,11 +2,11 @@
 # 查找脚本所在路径，并进入
 #DIR="$( cd "$( dirname "$0"  )" && pwd  )"
 DIR=$PWD
-cd $DIR/object_detection
+cd $DIR
 echo current dir is $PWD
 
 # 设置目录，避免module找不到的问题
-export PYTHONPATH=$PYTHONPATH:$DIR:$DIR/../slim:$DIR
+export PYTHONPATH=$PYTHONPATH:$DIR:$DIR/slim:$DIR/object_detection
 
 # 定义各目录
 output_dir=/output  # 训练目录
@@ -34,14 +34,14 @@ do
     sed -i "s/^  num_steps: $last$/  num_steps: $current/g" $pipeline_config_path  # 通过num_steps控制一次训练最多100step
 
     echo "############" $i "training #################"
-    python ./train.py --train_dir=$train_dir --pipeline_config_path=$pipeline_config_path
+    python ./object_detection/train.py --train_dir=$train_dir --pipeline_config_path=$pipeline_config_path
 
     echo "############" $i "evaluating, this takes a long while #################"
-    python ./eval.py --checkpoint_dir=$checkpoint_dir --eval_dir=$eval_dir --pipeline_config_path=$pipeline_config_path
+    python ./object_detection/eval.py --checkpoint_dir=$checkpoint_dir --eval_dir=$eval_dir --pipeline_config_path=$pipeline_config_path
 done
 
 # 导出模型
-python ./export_inference_graph.py --input_type image_tensor --pipeline_config_path $pipeline_config_path --trained_checkpoint_prefix $train_dir/model.ckpt-$current  --output_directory $output_dir/exported_graphs
+python ./object_detection/export_inference_graph.py --input_type image_tensor --pipeline_config_path $pipeline_config_path --trained_checkpoint_prefix $train_dir/model.ckpt-$current  --output_directory $output_dir/exported_graphs
 
 # 在test.jpg上验证导出的模型
 python ./inference.py --output_dir=$output_dir --dataset_dir=$dataset_dir
